@@ -1356,12 +1356,29 @@ function downloadPDF(){
     y += 7;
 
     s.questions.forEach(q => {
-      qNum++;
-      // Strip HTML tags and clean text
-      let txt = String(q.text)
-        .replace(/<sup>(.*?)<\/sup>/g, '^$1')
-        .replace(/<[^>]+>/g, '')
-        .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+  qNum++;
+  let txt = String(q.text)
+    .replace(/<sup>(.*?)<\/sup>/g, '^$1')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>')
+    // Unicode fixes
+    .replace(/₹/g, 'Rs.')
+    .replace(/π/g, 'pi')
+    .replace(/α/g, 'alpha')
+    .replace(/β/g, 'beta')
+    .replace(/√/g, 'sqrt')
+    .replace(/∛/g, 'cbrt')
+    .replace(/²/g, '^2')
+    .replace(/³/g, '^3')
+    .replace(/⁴/g, '^4')
+    .replace(/×/g, 'x')
+    .replace(/÷/g, '/')
+    .replace(/−/g, '-')
+    .replace(/\u2212/g, '-')
+    .replace(/\u2013/g, '-')
+    .replace(/\u2014/g, '-')
+    .replace(/°/g, ' deg')
+    .replace(/[^\x00-\x7F]/g, '?');  // catch-all for any remaining non-ASCII
       checkPage(10);
       doc.setFont('helvetica','bold');
       doc.setFontSize(10.5);
@@ -1387,11 +1404,24 @@ function downloadPDF(){
     paper.sections.forEach(s => {
       s.questions.forEach(q => {
         aN++;
-        let ans = String(q.answer||'')
-          .replace(/[²³⁴]/g, c=>({'²':'2','³':'3','⁴':'4'}[c]))
-          .replace(/[√∛]/g, c=>({'√':'sqrt','∛':'cbrt'}[c]))
-          .replace(/[×÷]/g, c=>({'×':'x','÷':'/'}[c]))
-          .replace(/[₹]/g,'Rs.');
+       let ans = String(q.answer||'')
+  .replace(/₹/g, 'Rs.')
+  .replace(/π/g, 'pi')
+  .replace(/α/g, 'alpha')
+  .replace(/β/g, 'beta')
+  .replace(/√/g, 'sqrt')
+  .replace(/∛/g, 'cbrt')
+  .replace(/²/g, '^2')
+  .replace(/³/g, '^3')
+  .replace(/⁴/g, '^4')
+  .replace(/×/g, 'x')
+  .replace(/÷/g, '/')
+  .replace(/−/g, '-')
+  .replace(/\u2212/g, '-')
+  .replace(/\u2013/g, '-')
+  .replace(/\u2014/g, '-')
+  .replace(/°/g, ' deg')
+  .replace(/[^\x00-\x7F]/g, '?');
         checkPage(8);
         doc.setFont('helvetica','bold');
         doc.setFontSize(9.5);
