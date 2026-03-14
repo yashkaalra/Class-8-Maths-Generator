@@ -1443,47 +1443,40 @@ function renderMathText(doc, fullText, startX, startY, maxWidth) {
     doc.text(`Section ${s.name}  ${s.label}`, margin+2, y);
     y += 7;
 
-    s.questions.forEach(q => {
-  qNum++;
-  let txt = String(q.text)
-  .replace(/<(?!sup|\/sup)[^>]+>/g, '')
-  .replace(/\^(\d+|\(-?\d+\))/g, '<sup>$1</sup>') // Ye line ^2 ya ^(-4) ko <sup> mein badal degi
-  .replace(/\^/g, '') // Bache huye faltu ^ ko hatane ke liye
-    .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>')
-    // Unicode fixes
-    .replace(/₹/g, 'Rs.')
-    .replace(/π/g, 'pi')
-    .replace(/α/g, 'alpha')
-    .replace(/β/g, 'beta')
-    .replace(/√/g, 'sqrt')
-    .replace(/∛/g, 'cbrt')
-    .replace(/²/g, '^2')
-    .replace(/³/g, '^3')
-    .replace(/⁴/g, '^4')
-    .replace(/×/g, 'x')
-    .replace(/÷/g, '/')
-    .replace(/−/g, '-')
-    .replace(/\u2212/g, '-')
-    .replace(/\u2013/g, '-')
-    .replace(/\u2014/g, '-')
-    .replace(/°/g, ' deg')
-    .replace(/sqrt(\d+)/g, 'sqrt($1)')
-    .replace(/cbrt(\d+)/g, 'cbrt($1)')
-    .replace(/[^\x00-\x7F]/g, '?'); // catch-all for any remaining non-ASCII
-      checkPage(10);
-     doc.setFont('helvetica','bold');
-doc.setFontSize(10.5);
-doc.text(`${qNum}.`, margin, y);
-doc.setFont('helvetica','normal');
+   s.questions.forEach(q => {
+      qNum++;
       
-// Pehle page check karo ki space hai ya nahi
-checkPage(12); 
+      // 1. Sabse pehle Caret (^) ko <sup> mein badlo taaki renderer pehchan sake
+      let txt = String(q.text)
+        .replace(/\^(\(-?\d+\)|\d+)/g, '<sup>$1</sup>') 
+        
+      // 2. Roots ko bracket format mein badlo (drawSqrt renderer ke liye)
+        .replace(/√\s*(\d+)/g, 'sqrt($1)')
+        .replace(/∛\s*(\d+)/g, 'cbrt($1)')
 
-// Ab naye smart renderer ko use karo jo sqrt aur powers dono handle karega
-const heightUsed = renderMathText(doc, txt, margin+8, y, contentW-10);
+      // 3. HTML tags saaf karo (Lekin <sup> tags ko bachao)
+        .replace(/<(?!sup|\/sup)[^>]+>/g, '')
+        
+      // 4. Baki Unicode aur Formatting fixes
+        .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>')
+        .replace(/₹/g, 'Rs.').replace(/π/g, 'pi')
+        .replace(/α/g, 'alpha').replace(/β/g, 'beta')
+        .replace(/²/g, '<sup>2</sup>').replace(/³/g, '<sup>3</sup>')
+        .replace(/×/g, 'x').replace(/÷/g, '/')
+        .replace(/[−\u2212\u2013\u2014]/g, '-')
+        .replace(/°/g, ' deg')
+        .replace(/[^\x00-\x7F]/g, '?');
 
-// Height update karo agle sawal ke liye
-y += heightUsed;
+      // 5. Page check aur Question Number print
+      checkPage(12);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10.5);
+      doc.text(`${qNum}.`, margin, y);
+      doc.setFont('helvetica', 'normal');
+      
+      // 6. Naya Smart Math Renderer call karo
+      const heightUsed = renderMathText(doc, txt, margin+8, y, contentW-10);
+      y += heightUsed;
     });
     y += 3;
   });
