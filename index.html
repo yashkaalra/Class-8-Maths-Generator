@@ -1326,10 +1326,14 @@ function downloadPDF(){
     width: 200,
     windowWidth: 800,
     html2canvas: {
-      scale: 2,
+      scale: 0.8,
       useCORS: true,
       logging: false,
-      letterRendering: true
+      letterRendering: true,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: 800,
+      windowHeight: document.getElementById(`paper-${activePaperIndex}`).scrollHeight
     }
   });
 }
