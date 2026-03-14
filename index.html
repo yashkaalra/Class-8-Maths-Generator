@@ -1328,30 +1328,38 @@ function downloadPDF(){
   function checkPage(needed){
     if(y + needed > 285){ doc.addPage(); y = 15; }
   }
-  function drawSqrt(doc, x, yPos, text, fontSize){
+ function drawSqrt(doc, x, yPos, text, fontSize){
   doc.setFontSize(fontSize);
   const textW = doc.getTextWidth(text);
-  const h = fontSize * 0.35;
+  // h ko 0.45 kiya taaki line number se na chipke (thodi upar rahe)
+  const h = fontSize * 0.45; 
   doc.setLineWidth(0.3);
-  doc.line(x, yPos, x+1.5, yPos+2); // Choti niche wali line
-  doc.line(x+1.5, yPos+2, x+3, yPos-h+1); // Tikona upar
-  doc.line(x+3, yPos-h+1, x+3+textW+2, yPos-h+1); // Chhat (Overline)
+  
+  doc.line(x, yPos, x+1.5, yPos+2); // Niche wali tick
+  doc.line(x+1.5, yPos+2, x+3, yPos-h); // Upar jane wali diagonal line
+  doc.line(x+3, yPos-h, x+3+textW+2, yPos-h); // Horizontal line (Overline)
+  
   doc.text(text, x+3.5, yPos);
   return x + 3.5 + textW + 2;
 }
 
 function drawCbrt(doc, x, yPos, text, fontSize){
-  doc.setFontSize(fontSize * 0.6);
-  doc.text('3', x, yPos-2); // Chota 3
+  // '3' ko thoda right aur niche shift kiya radical sign ke kareeb lane ke liye
+  doc.setFontSize(fontSize * 0.55);
+  doc.text('3', x + 0.5, yPos - 1.8); 
+  
   doc.setFontSize(fontSize);
   const textW = doc.getTextWidth(text);
-  const h = fontSize * 0.35;
+  const h = fontSize * 0.45; // Height factor yahan bhi upar rakha hai
   doc.setLineWidth(0.3);
-  doc.line(x+2.5, yPos, x+4, yPos+2);
-  doc.line(x+4, yPos+2, x+5.5, yPos-h+1);
-  doc.line(x+5.5, yPos-h+1, x+5.5+textW+2, yPos-h+1);
-  doc.text(text, x+6, yPos);
-  return x + 6 + textW + 2;
+  
+  // Radical lines ka starting point 'x+1.5' kiya taaki gap khatam ho jaye
+  doc.line(x+1.5, yPos, x+3, yPos+2); 
+  doc.line(x+3, yPos+2, x+4.5, yPos-h); 
+  doc.line(x+4.5, yPos-h, x+4.5+textW+2, yPos-h); 
+  
+  doc.text(text, x+5, yPos);
+  return x + 5 + textW + 2;
 }
 
 function renderMathText(doc, fullText, startX, startY, maxWidth) {
