@@ -1169,12 +1169,12 @@ function buildPaper(chapters){
     s.questions.forEach(q => {
       qNum++;
       
-      // ─── POWERFUL CLEANING LOGIC (REPLACED) ───
-      let cleanText = q.text
-        [span_3](start_span).replace(/''/g, '-')                 // Double single quotes ko minus banao (Q.28, Q.30 fix)[span_3](end_span)
-        [span_4](start_span).replace(/(\w|\d)"(\s*)(\w|\d)/g, '$1 - $3') // Characters ke beech wale " ko minus banao[span_4](end_span)
-        [span_5](start_span).replace(/"/g, '')                   // Baki bache faltu " ko hata do[span_5](end_span)
-        .replace(/(\d)x(\d)/g, '$1x$2')      // Algebra spacing fix
+      // Sabhi ajeeb characters ki safai
+      let cleanText = String(q.text)
+        .replace(/''/g, '-') 
+        .replace(/(\w|\d)"(\s*)(\w|\d)/g, '$1 - $3')
+        .replace(/"/g, '')
+        .replace(/(\d)x(\d)/g, '$1x$2')
         .trim();
       
       html += `<div class="q-row">
@@ -1191,18 +1191,14 @@ function buildPaper(chapters){
   paper.sections.forEach(s => {
     s.questions.forEach(q => {
       qNum++;
-      // Answer key ko bhi clean rakhein
-      let cleanAns = q.answer.toString().replace(/''/g, '-').replace(/"/g, '');
-      html += `<div class="ans-row">
-        <span class="ans-num">${qNum}.</span>
-        <span class="ans-text">${cleanAns}</span>
-      </div>`;
+      let cleanAns = String(q.answer).replace(/''/g, '-').replace(/"/g, '');
+      html += `<div class="ans-row"><span class="ans-num">${qNum}.</span><span class="ans-text">${cleanAns}</span></div>`;
     });
   });
 
   html += `</div></div>`;
   return html;
- }
+}
   
 
 function generatePapers(){
@@ -1306,7 +1302,6 @@ function downloadPDF(){
   doc.setFontSize(16);
   doc.text(`${boardLabel} MATHEMATICS EXAMINATION`, pageWidth / 2, y, {align: 'center'});
   y += 8;
-  
   doc.setFontSize(12);
   doc.text(`${classLabel} · PAPER ${activePaperIndex + 1}`, pageWidth / 2, y, {align: 'center'});
   y += 10;
@@ -1316,7 +1311,6 @@ function downloadPDF(){
   doc.text(`Time: 3 Hours`, margin, y);
   doc.text(`Maximum Marks: 80`, pageWidth - margin, y, {align: 'right'});
   y += 4;
-  
   doc.setLineWidth(0.5);
   doc.line(margin, y, pageWidth - margin, y);
   y += 10;
@@ -1324,9 +1318,7 @@ function downloadPDF(){
   // --- Questions ---
   let qNum = 0;
   paper.sections.forEach(s => {
-    // Page check for section heading
     if (y > 260) { doc.addPage(); y = 20; }
-    
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
     doc.text(`Section ${s.name} ${s.label}`, margin, y);
@@ -1337,16 +1329,21 @@ function downloadPDF(){
 
     s.questions.forEach(q => {
       qNum++;
-      const qLine = `${qNum}. ${q.text}`;
+      
+      // ─── Safai Abhiyan (PDF) ───
+      let qText = String(q.text || "");
+      let cleanText = qText
+        .replace(/±/g, 'a') // PDF font safety
+        .replace(/''/g, '-')
+        .replace(/(\w|\d)"(\s*)(\w|\d)/g, '$1 - $3')
+        .replace(/"/g, '')
+        .trim();
+
+      const qLine = `${qNum}. ${cleanText}`;
       const splitQ = doc.splitTextToSize(qLine, contentWidth);
-      const qHeight = splitQ.length * 7; // Height based on line count
+      const qHeight = splitQ.length * 7;
 
-      // Automatic Page Break
-      if (y + qHeight > 280) {
-        doc.addPage();
-        y = 20;
-      }
-
+      if (y + qHeight > 280) { doc.addPage(); y = 20; }
       doc.text(splitQ, margin, y);
       y += qHeight + 2; 
     });
@@ -1361,23 +1358,18 @@ function downloadPDF(){
     doc.setFontSize(14);
     doc.text('ANSWER KEY', pageWidth / 2, y, {align: 'center'});
     y += 12;
-    
     doc.setFont("times", "normal");
     doc.setFontSize(10);
     let aNum = 0;
-
     paper.sections.forEach(s => {
       s.questions.forEach(q => {
         aNum++;
-        const aLine = `${aNum}. ${q.answer}`;
+        let aText = String(q.answer || "");
+        let cleanAns = aText.replace(/''/g, '-').replace(/"/g, '');
+        const aLine = `${aNum}. ${cleanAns}`;
         const splitA = doc.splitTextToSize(aLine, contentWidth);
         const aHeight = splitA.length * 5;
-
-        if (y + aHeight > 280) {
-          doc.addPage();
-          y = 20;
-        }
-
+        if (y + aHeight > 280) { doc.addPage(); y = 20; }
         doc.text(splitA, margin, y);
         y += aHeight + 2;
       });
@@ -1387,7 +1379,6 @@ function downloadPDF(){
   doc.save(`${boardLabel}_${classLabel.replace(' ','')}_Paper${activePaperIndex+1}.pdf`);
 }
 
-// Init
 buildChapterList();
 </script>
 </body>
