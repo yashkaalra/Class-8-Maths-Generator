@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Question Paper Generator – ICSE Class 8 &amp; CBSE Class 9</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',sans-serif;background:#f0f2f5;display:flex;height:100vh;overflow:hidden}
@@ -1407,6 +1406,7 @@ function downloadPDF(){
 
   doc.save(`${boardLabel}_${classLabel.replace(' ','')}_Paper${activePaperIndex+1}.pdf`);
 }
+buildChapterList();
 </script>
 </body>
 </html>
