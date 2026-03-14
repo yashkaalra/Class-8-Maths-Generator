@@ -1330,14 +1330,15 @@ function downloadPDF(){
     s.questions.forEach(q => {
       qNum++;
       
-      // ─── Safai Abhiyan (PDF) ───
-      let qText = String(q.text || "");
-      let cleanText = qText
-        .replace(/±/g, 'a') // PDF font safety
-        .replace(/''/g, '-')
-        .replace(/(\w|\d)"(\s*)(\w|\d)/g, '$1 - $3')
-        .replace(/"/g, '')
-        .trim();
+     // ─── Safai Abhiyan (PDF) ───
+let qText = String(q.text || "");
+let cleanText = qText
+  .replace(/[±α]/g, 'a')                       // 1. Symbols fix
+  .replace(/''/g, '-')                         // 2. Double single quotes ko minus banao
+  .replace(/(\w|\d)\s*"\s*(\w|\d)/g, '$1 - $2') // 3. Beech wale quotes ko minus banao (with space safety)
+  .replace(/"/g, '')                           // 4. Ab jo akele faltu quotes bache unhe uda do
+  .replace(/\s+/g, ' ')                        // 5. Extra spaces saaf karo
+  .trim();
 
       const qLine = `${qNum}. ${cleanText}`;
       const splitQ = doc.splitTextToSize(qLine, contentWidth);
