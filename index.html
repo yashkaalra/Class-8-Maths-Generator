@@ -60,12 +60,12 @@ body{font-family:'Segoe UI',sans-serif;background:#f0f2f5;display:flex;height:10
 .diff-tab.active { background: #6c63ff !important; color: #fff !important; font-weight: 600; transition: 0.3s; }
   /* ── Print Styles ── */
 @media print {
-  /* Sidebar, Toolbar aur Buttons ko chhupayein */
-  #sidebar, #toolbar, #paperTabs, .ch-controls, #genBtn {
+  /* 1. Faltu cheezein chhupayein */
+  #sidebar, #toolbar, #paperTabs, .ch-controls, #genBtn, .sb-section {
     display: none !important;
   }
 
-  /* Main area ko full width karein aur background hatayein */
+  /* 2. Layout ko clean aur full-page karein */
   body, #main, #paperArea {
     background: #fff !important;
     padding: 0 !important;
@@ -75,15 +75,26 @@ body{font-family:'Segoe UI',sans-serif;background:#f0f2f5;display:flex;height:10
     width: 100% !important;
   }
 
-  /* Question paper ko center mein rakhein aur shadow hatayein */
+  /* 3. Paper formatting (Spacing Fix) */
   .paper-doc {
     box-shadow: none !important;
     border: none !important;
-    margin: 0 auto !important;
-    padding: 0 !important;
+    margin: 0 !important;
+    padding: 20mm !important; [span_1](start_span)/* Kinaro se gap dega[span_1](end_span) */
     width: 100% !important;
     max-width: 100% !important;
+    text-align: left !important; [span_2](start_span)/* Extra spaces (Justify) khatam karega[span_2](end_span) */
+    word-spacing: normal !important;
   }
+
+  /* 4. Questions ke beech ka gap */
+  .question-item, p, div {
+    margin-bottom: 12px !important;
+    line-height: 1.5 !important;
+    color: #000 !important;
+  }
+}
+  
 
   /* Page break logic: Section beech mein na kate */
   .section-block {
