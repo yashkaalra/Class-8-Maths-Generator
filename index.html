@@ -1342,6 +1342,14 @@ function downloadPDF(){
   doc.text(text, x+3.5, yPos);
   return x + 3.5 + textW + 2;
 }
+  function drawAngle(doc, x, yPos, fontSize) {
+  const s = fontSize * 0.4; // Symbol ka size adjust karne ke liye
+  doc.setLineWidth(0.3);
+  // Angle ki do lines draw karega: niche wali seedhi aur upar wali diagonal
+  doc.line(x, yPos, x + s, yPos); 
+  doc.line(x, yPos, x + s*0.8, yPos - s);
+  return x + s + 1; // Naya X position return karega
+}
 
 function drawCbrt(doc, x, yPos, text, fontSize){
   // '3' ko thoda right aur niche shift kiya radical sign ke kareeb lane ke liye
@@ -1371,8 +1379,9 @@ function renderMathText(doc, fullText, startX, startY, maxWidth) {
   let curY = startY;
   const lineH = 6;
 
-  parts.forEach(part => {
+parts.forEach(part => {
     if (!part) return;
+
     const sqrtMatch = part.match(/^sqrt\(([^)]+)\)$/);
     const cbrtMatch = part.match(/^cbrt\(([^)]+)\)$/);
     const supMatch = part.match(/^<sup>([^<]+)<\/sup>$/);
@@ -1386,9 +1395,40 @@ function renderMathText(doc, fullText, startX, startY, maxWidth) {
       doc.text(supMatch[1], curX, curY - 2);
       curX += doc.getTextWidth(supMatch[1]) + 0.5;
       doc.setFontSize(fontSize);
-    } else {
+    } 
+    // --- Naya Angle Symbol Logic ---
+    else if (part.startsWith('∠')) {
+      doc.setLineWidth(0.3);
+      doc.line(curX, curY, curX + 3.5, curY); // Niche ki line
+      doc.line(curX, curY, curX + 2.5, curY - 3); // Tirchi line
+      curX += 4.5;
+      let angleName = part.substring(1);
+      doc.text(angleName, curX, curY);
+      curX += doc.getTextWidth(angleName) + 1;
+    } 
+    else {
+      // Normal text aur Degree symbol handling
       const words = part.split(' ');
       words.forEach((word, i) => {
+        if (!word) return;
+
+        // Degree symbol fix (Agar word mein ° hai)
+        if (word.includes('°')) {
+          let subParts = word.split('°');
+          doc.text(subParts[0], curX, curY);
+          curX += doc.getTextWidth(subParts[0]);
+          doc.setFontSize(fontSize * 0.6);
+          doc.text('o', curX, curY - 2); // Degree ki jagah chota 'o'
+          curX += 2;
+          doc.setFontSize(fontSize);
+          if (subParts[1]) {
+            doc.text(subParts[1], curX, curY);
+            curX += doc.getTextWidth(subParts[1]);
+          }
+          curX += 1; // space
+          return;
+        }
+
         const w = doc.getTextWidth(word + ' ');
         if (curX + w > startX + maxWidth && curX > startX) {
           curX = startX;
@@ -1465,7 +1505,7 @@ function renderMathText(doc, fullText, startX, startY, maxWidth) {
         .replace(/×/g, 'x').replace(/÷/g, '/')
         .replace(/[−\u2212\u2013\u2014]/g, '-')
         .replace(/°/g, ' deg')
-        .replace(/[^\x00-\x7F]/g, '?');
+        .replace(/[^\x00-\x7F\u2220]/g, '');
 
       // 5. Page check aur Question Number print
       checkPage(12);
@@ -1511,7 +1551,7 @@ function renderMathText(doc, fullText, startX, startY, maxWidth) {
   .replace(/°/g, ' deg')
   .replace(/sqrt(\d+)/g, 'sqrt($1)')
   .replace(/cbrt(\d+)/g, 'cbrt($1)')
-  .replace(/[^\x00-\x7F]/g, '?');
+  .replace(/[^\x00-\x7F\u2220]/g, '');
         checkPage(8);
         doc.setFont('helvetica','bold');
         doc.setFontSize(9.5);
