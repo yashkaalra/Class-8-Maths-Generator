@@ -1310,6 +1310,12 @@ function downloadPDF(){
   const classLabel = isICSE ? 'Class VIII' : 'Class IX';
   const boardLabel = isICSE ? 'ICSE' : 'CBSE';
 
+  // Temporarily style paper for PDF capture
+  const originalStyle = paperEl.style.cssText;
+  paperEl.style.width = '900px';
+  paperEl.style.padding = '30px';
+  paperEl.style.boxSizing = 'border-box';
+
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',
@@ -1318,22 +1324,23 @@ function downloadPDF(){
 
   doc.html(paperEl, {
     callback: function(doc) {
+      paperEl.style.cssText = originalStyle;
       if(ansEl && wasHidden) ansEl.style.display = 'none';
       doc.save(`${boardLabel}_${classLabel.replace(' ','')}_Paper${activePaperIndex+1}.pdf`);
     },
     x: 5,
     y: 5,
     width: 200,
-    windowWidth: 800,
+    windowWidth: 900,
     html2canvas: {
-      scale: 0.8,
+      scale: 0.75,
       useCORS: true,
       logging: false,
       letterRendering: true,
       scrollX: 0,
-      scrollY: 0,
-      windowWidth: 800,
-      windowHeight: document.getElementById(`paper-${activePaperIndex}`).scrollHeight
+      scrollY: -window.scrollY,
+      width: 900,
+      windowWidth: 900
     }
   });
 }
