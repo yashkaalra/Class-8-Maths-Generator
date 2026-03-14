@@ -1309,26 +1309,7 @@ function getSelectedChapters(){
 
 function selAll(){getCurrentChapters().forEach((_,i)=>{const el=document.getElementById(`ch-${i}`);if(el)el.checked=true;});}
 function selNone(){getCurrentChapters().forEach((_,i)=>{const el=document.getElementById(`ch-${i}`);if(el)el.checked=false;});}
-
-function downloadPDF(){
-  if(!generatedPapers.length) return;
-  const {jsPDF} = window.jspdf;
-  const doc = new jsPDF({orientation:'portrait', unit:'mm', format:'a4'});
-
-  const isICSE = currentCurriculum === 'icse8';
-  const classLabel = isICSE ? 'Class VIII' : 'Class IX';
-  const boardLabel = isICSE ? 'ICSE' : 'CBSE';
-  const paper = generatedPapers[activePaperIndex];
-
-  const margin = 15;
-  const pageW = 210;
-  const contentW = pageW - margin * 2;
-  let y = 18;
-
-  function checkPage(needed){
-    if(y + needed > 285){ doc.addPage(); y = 15; }
-  }
- function drawSqrt(doc, x, yPos, text, fontSize) {
+function drawSqrt(doc, x, yPos, text, fontSize) {
   doc.setFontSize(fontSize);
   const textW = doc.getTextWidth(text);
   const h = fontSize * 0.45;
