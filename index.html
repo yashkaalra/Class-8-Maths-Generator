@@ -57,6 +57,45 @@ body{font-family:'Segoe UI',sans-serif;background:#f0f2f5;display:flex;height:10
 .ans-row{font-size:12px;margin-bottom:6px;display:flex;gap:6px}
 .ans-num{font-weight:700;min-width:26px}
 .ans-text{color:#333}
+.diff-tab.active { background: #6c63ff !important; color: #fff !important; font-weight: 600; transition: 0.3s; }
+  /* ── Print Styles ── */
+@media print {
+  /* Sidebar, Toolbar aur Buttons ko chhupayein */
+  #sidebar, #toolbar, #paperTabs, .ch-controls, #genBtn {
+    display: none !important;
+  }
+
+  /* Main area ko full width karein aur background hatayein */
+  body, #main, #paperArea {
+    background: #fff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+    width: 100% !important;
+  }
+
+  /* Question paper ko center mein rakhein aur shadow hatayein */
+  .paper-doc {
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Page break logic: Section beech mein na kate */
+  .section-block {
+    page-break-inside: avoid;
+    margin-bottom: 20px;
+  }
+
+  /* Answers agar hidden hain to print mein bhi na aayein */
+  .ans-section {
+    page-break-before: always; /* Answer key hamesha naye page se shuru ho */
+  }
+}
 </style>
 </head>
 <body>
@@ -76,6 +115,14 @@ body{font-family:'Segoe UI',sans-serif;background:#f0f2f5;display:flex;height:10
     <label>Number of Papers</label>
     <input type="number" id="numPapers" value="1" min="1" max="5"/>
   </div>
+  <div class="sb-section">
+  <label>Difficulty Level</label>
+  <div style="display:flex; gap:5px; background:#12122a; padding:4px; border-radius:6px; border:1px solid #3a3a5c;">
+    <button class="diff-tab active" data-diff="easy" onclick="setDifficulty('easy')" style="flex:1; background:none; border:none; color:#aaa; font-size:11px; padding:6px; cursor:pointer; border-radius:4px;">Easy</button>
+    <button class="diff-tab" data-diff="moderate" onclick="setDifficulty('moderate')" style="flex:1; background:none; border:none; color:#aaa; font-size:11px; padding:6px; cursor:pointer; border-radius:4px;">Moderate</button>
+    <button class="diff-tab" data-diff="hard" onclick="setDifficulty('hard')" style="flex:1; background:none; border:none; color:#aaa; font-size:11px; padding:6px; cursor:pointer; border-radius:4px;">Hard</button>
+  </div>
+</div>
   <div class="chapters-area">
     <label>Select Chapters</label>
     <div class="ch-controls">
@@ -120,9 +167,26 @@ function isPrime(n){if(n<2)return false;for(let i=2;i*i<=n;i++)if(n%i===0)return
 
 // ─── State ────────────────────────────────────────────────────────────────────
 let currentCurriculum = 'icse8';
+let currentDifficulty = 'easy'; // Ye naye variable ko add kiya gaya hai
 let generatedPapers = [];
 let activePaperIndex = 0;
 let showAnswers = false;
+
+// Ye naya function hai jo buttons ko click karne par kaam karega
+function setDifficulty(d) {
+  currentDifficulty = d; // Difficulty update
+  
+  // Sabhi difficulty buttons se 'active' class hatayein
+  document.querySelectorAll('.diff-tab').forEach(t => t.classList.remove('active'));
+  
+  // Jo button click hua hai, uspar 'active' class lagayein
+  const activeBtn = document.querySelector(`[data-diff="${d}"]`);
+  if(activeBtn) {
+    activeBtn.classList.add('active');
+  }
+  
+  console.log("Difficulty set to: " + currentDifficulty);
+}
 
 // ─── Chapter Lists ────────────────────────────────────────────────────────────
 const CHAPTERS_ICSE8 = [
