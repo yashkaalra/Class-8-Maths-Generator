@@ -1103,17 +1103,24 @@ function getGeneratorSet(){return currentCurriculum==='cbse9'?G_CBSE9:G_ICSE8}
 function buildPool(chapters){
   const pool=[];
   const GG=getGeneratorSet();
-  const globalUsed=new Set();   // ← tracks ALL questions across ALL chapters
+  const globalUsed=new Set();
   chapters.forEach(ch=>{
     const g=GG[ch];if(!g)return;
-    const levels=[['easy',1],['moderate',2],['hard',3],['hard',4]];
+    let levels;
+    if(currentDifficulty==='easy'){
+      levels=[['easy',1],['easy',2],['moderate',3],['moderate',4]];
+    } else if(currentDifficulty==='moderate'){
+      levels=[['easy',1],['moderate',2],['moderate',3],['hard',4]];
+    } else {
+      levels=[['moderate',1],['hard',2],['hard',3],['hard',4]];
+    }
     levels.forEach(([level,marks])=>{
       if(!g[level])return;
       g[level].forEach((fn)=>{
         try{
           const q=fn();
           if(q&&q.text&&!globalUsed.has(q.text)){
-            globalUsed.add(q.text);   // ← mark as used globally
+            globalUsed.add(q.text);
             pool.push({chapter:ch,level,marks,topic:q.topic,text:q.text,answer:q.answer});
           }
         }catch(e){}
