@@ -1628,10 +1628,23 @@ let cleanAns = aText
 function generatePapers(){
   // 1. Selected chapters check karein
   const chapters = getSelectedChapters();
-  if(!chapters.length){
+ if(!chapters.length){
+  // Try rebuilding the list if DOM wasn't ready earlier
+  buildChapterList();
+  const retry = getSelectedChapters();
+  if(!retry.length){
     alert('Please select at least one chapter.');
     return;
   }
+  // use retry instead
+  generatedPapers = [];
+  for(let i = 0; i < n; i++) {
+    generatedPapers.push(buildPaper(retry));
+  }
+  activePaperIndex = 0; showAnswers = false;
+  renderAll();
+  return;
+}
 
   // 2. Papers ki sankhya set karein (Max 5)
   const n = Math.min(5, Math.max(1, parseInt(document.getElementById('numPapers').value) || 1));
