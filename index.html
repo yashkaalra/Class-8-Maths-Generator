@@ -1626,10 +1626,7 @@ let cleanAns = aText
   
 
 function generatePapers(){
-  // Get n first, before any branching
   const n = Math.min(5, Math.max(1, parseInt(document.getElementById('numPapers').value) || 1));
-
-  // Get selected chapters; rebuild list if empty (DOM timing issue)
   let chapters = getSelectedChapters();
   if(!chapters.length){
     buildChapterList();
@@ -1639,7 +1636,6 @@ function generatePapers(){
     alert('Please select at least one chapter.');
     return;
   }
-
   generatedPapers = [];
   for(let i = 0; i < n; i++){
     generatedPapers.push(buildPaper(chapters));
@@ -1647,10 +1643,9 @@ function generatePapers(){
   activePaperIndex = 0;
   showAnswers = false;
   renderAll();
-
   if(window.innerWidth < 850){
-    const toolbar = document.getElementById('toolbar');
-    if(toolbar) toolbar.scrollIntoView({ behavior: 'smooth' });
+    const t = document.getElementById('toolbar');
+    if(t) t.scrollIntoView({ behavior:'smooth' });
   }
 }
   
